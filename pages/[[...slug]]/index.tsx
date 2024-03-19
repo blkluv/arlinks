@@ -1,7 +1,6 @@
 "use client"
 import Image from "next/image";
 import { useRouter } from 'next/router'
-import { Inter } from "next/font/google";
 import {State, useHookstate} from "@hookstate/core";
 import {PermissionType} from "arconnect";
 import Arweave from 'arweave';
@@ -10,7 +9,7 @@ import {ArweaveWallet} from "@/types/ArweaveWallet";
 import {createTransaction, dispatchTransaction} from "@/utils/createTransaction";
 import {Tag} from "@/types";
 import Account from 'arweave-account';
-import { Dialog, Transition } from '@headlessui/react'
+
 
 const arweave = Arweave.init({
   host: "localhost",
@@ -28,19 +27,21 @@ const PERMISSIONS: PermissionType[] = [
   "ACCESS_ADDRESS", "ACCESS_PUBLIC_KEY", "ACCESS_ALL_ADDRESSES", "SIGN_TRANSACTION",
   "ENCRYPT", "DECRYPT", "SIGNATURE", "ACCESS_ARWEAVE_CONFIG", "DISPATCH"
 ]
-const inter = Inter({ subsets: ["latin"] });
 
 
-function NewLinkForm({wallet}: {wallet: null|ArweaveWallet}) {
+function NewLinkForm({wallet, isOpen, setIsOpen}: {wallet: null|ArweaveWallet, isOpen: boolean, setIsOpen: any}) {
   const [sourceId, setSourceId] = useState("");
   const [sourceName, setSourceName] = useState("");
-  const [txId, setTxId] = useState<null|string>(null);
-  const [status, setStatus] = useState("");
+  const defaultStatus = {
+    submitted: false,
+    transaction_id: "",
+    sourceId: "",
+    sourceName: ""
+  };
+  const [status, setStatus] = useState(defaultStatus);
   if(!wallet) return null;
 
-  const handleCreateNewTransaction = async(
-    // {wallet, source, name, onChain}: {wallet: null|ArweaveWallet, source: string, name: string, onChain: boolean}
-  ) => {
+  const handleCreateNewTransaction = async() => {
     const tags: Tag[] = [
       {name: "App-Name", value: "ArTree"},
       {name: "Source", value: sourceId},
@@ -49,96 +50,110 @@ function NewLinkForm({wallet}: {wallet: null|ArweaveWallet}) {
     const transaction = await createTransaction({arweave, tags})
     const response = await dispatchTransaction({transaction, wallet})
     if(response && response.id){
-      setTxId(response.id);
-      setStatus(`Successfully saved Tx Id ${sourceId} with title ${sourceName} on chain\nPin Id: ${response.id}`)
+      setStatus({submitted: true, transaction_id: response.id, sourceId: sourceId, sourceName: sourceName})
       setSourceId("")
       setSourceName("")
     }
   }
 
-  return (
-    <div className="relative flex flex-row items-center prose pt-8">
-      <div className="w-full"
-           // border w-full rounded-md mb-4"
-           >
-        <p
-          className="text-background-contrast rounded-md py-4 text-left px-5 max-sm:pt-6 max-sm:break-word"
-        >
-          Create new link
-        </p>
-        <div className="flex flex-col gap-2 bg-neutral-50 rounded-lg p-5">
-          <div id="source-id-input" className="flex flex-col">
-            <label htmlFor="source-id" className="mt-1.5 mb-1/2 text-sm">
-              Source TX
-            </label>
-            <div className="flex flex-row items-center">
-              <input
-                id="source-id"
-                autoComplete="off"
-                spellCheck={false}
-                type="text"
-                minLength={43}
-                maxLength={43}
-                value={sourceId}
-                onChange={(event => setSourceId(event.target.value))}
-                // disabled={state.submitted.value!!}
-                className="w-full flex-grow bg-slate-100 outline outline-2 outline-slate-400 focus:outline-4 rounded-md font-light tracking-tighter text-[16px] pl-2 px-2 py-0 mt-1"
-                // onBlur={() => {
-                //   if(state.collectionCode.value) {
-                //     state.globalTags.set(defaultAtomicTags(user.address, state.collectionCode.value))
-                //   }
-                // }}
-                // onKeyDown={event => handleKeyDownEnter(event, ()=>viz.coll.set(false))}
-              />
-              <div className="flex flex-col w-5">
-                {sourceId &&
-                  <div className="relative w-5 h-5 ml-3 [&>div]:border-2 [&>div]:border-gray-800 [&>div]:absolute [&>div]:top-0 [&>div]:left-0">
-                    {sourceId.length === 43
-                      ? <div className="w-full h-full rounded-full bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-green-500 to-green-800 shadow-[inset_0_0_20px_0_rgb(0_0_0/0.5)]"/>
-                      : <div className="w-full h-full rounded-full bg-[radial-gradient(ellipse,_var(--tw-gradient-stops))] from-gray-600 to-gray-800 shadow-[inset_0_0_20px_0_rgb(0_0_0/0.5)]"/>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
+  const reset = () => {
+    setSourceId("");
+    setSourceName("");
+    setStatus(defaultStatus);
+  }
 
-          <div id="source-name-input" className="flex flex-col pr-5">
-            <label htmlFor="source-name" className="mt-1.5 mb-1/2 text-sm">
-              Name
-            </label>
-            <input
-              id="source-name"
-              autoComplete="off"
-              spellCheck={true}
-              // disabled={state.submitted.value!!}
-              className="bg-slate-100 outline outline-2 outline-slate-400 focus:outline-4 rounded-md font-light tracking-tighter text-[16px] pl-2 px-2 py-0 mt-1"
-              onChange={(event) => setSourceName(event.target.value)}
-              //   if(event.target.value.length <= 300) {
-              //     state.collectionDescription.set(event.target.value)
-              //   }
-              // }}
-              // onKeyDown={event => handleKeyDownEnter(event, ()=>viz.coll.set(false))}
-              value={sourceName}
-            />
-          </div>
+  return (
+    <CustomModal
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      title="Add new link"
+      onSubmit={()=>handleCreateNewTransaction() }
+      onSubmitLabel={status.submitted ? "Reset" : "Submit"}
+      closeLabel={status.submitted ? "Close" : "Cancel"}
+    >
+    <div className="relative flex flex-row items-center">
+      <div className="w-full">
+        <div className="flex flex-col gap-2">
+          {!status.submitted &&
+            <>
+              <div id="source-id-input" className="flex flex-col">
+                <label htmlFor="source-id" className="mt-1.5 mb-1/2 text-sm">
+                  Source TX
+                </label>
+                <div className="flex flex-row items-center">
+                  <input
+                    id="source-id"
+                    autoComplete="off"
+                    spellCheck={false}
+                    type="text"
+                    minLength={43}
+                    maxLength={43}
+                    value={sourceId}
+                    onChange={(event => setSourceId(event.target.value))}
+                    className="w-full flex-grow bg-slate-100 outline outline-2 outline-slate-400 focus:outline-4 rounded-md font-light tracking-tighter text-[16px] pl-2 px-2 py-1 mt-1"
+                    // onKeyDown={event => handleKeyDownEnter(event, ()=>viz.coll.set(false))}
+                  />
+                </div>
+              </div>
+
+              <div id="source-name-input" className="flex flex-col">
+                <label htmlFor="source-name" className="mt-1.5 mb-1/2 text-sm">
+                  Name
+                </label>
+                <input
+                  id="source-name"
+                  autoComplete="off"
+                  spellCheck={true}
+                  className="bg-slate-100 outline outline-2 outline-slate-400 focus:outline-4 rounded-md font-light tracking-tighter text-[16px] pl-2 px-2 py-1 mt-1"
+                  onChange={(event) => setSourceName(event.target.value)}
+                  // onKeyDown={event => handleKeyDownEnter(event, ()=>viz.coll.set(false))}
+                  value={sourceName}
+                />
+              </div>
+            </>
+          }
           <div id="save-status" className="">
-            {status}
+            {status.submitted &&
+              <div className="flex flex-col">
+                <p>Successfully saved new link on Arweave<br/><small><a
+                  href={`https://viewblock.io/arweave/tx/${status.transaction_id}}`}>{status.transaction_id}</a></small>
+                </p>
+                <br/>
+                <p>What you saved:</p>
+                <ul className="pl-3">
+                  <li><b>Name:</b> {status.sourceName}</li>
+                  <li><b>Id/Url:</b> {status.sourceId}</li>
+                </ul>
+              </div>
+            }
           </div>
-          <div className="">
-            <button onClick={() => handleCreateNewTransaction()}>
-              Save on-chain
+          <div id="button-group"
+               className="border-t w-full mt-6p-4 md:p-5 flex flex-row gap-4 justify-center [&>button]:transition-colors">
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              {status.submitted ? "Close" : "Cancel"}
+            </button>
+            <button
+              type="button"
+              onClick={status.submitted ? ()=>reset() : () => handleCreateNewTransaction()}
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              {status.submitted ? "Reset" : "Submit"}
             </button>
           </div>
         </div>
       </div>
 
     </div>
+    </CustomModal>
   )
 }
 
 
-function Avatar({avatarUrl, name, size=16}: {avatarUrl: string|undefined, name?: string, size?: number}) {
+function Avatar({avatarUrl, name, size = 16}: { avatarUrl: string | undefined, name?: string, size?: number }) {
   return (
     <div id="Avatar">
       <div className="flex flex-row w-fit max-w-full items-center gap-2">
@@ -211,12 +226,18 @@ function NavBar(props: {wallet: ArweaveWallet, state: State<WalletState, any>, r
   return (
     <nav className="w-full flex flex-row items-center justify-between p-4">
       <h1 className="text-4xl tracking-tight font-extrabold text-gray-900">ArTree</h1>
-      <ConnectButton {...props} />
+      <div className="flex flex-row">
+        <ConnectButton {...props} />
+        {props.state.address.value && <a className="ml-4" href={`/${props.state.address.value}`}>My links</a>}
+      </div>
     </nav>
   )
 }
 
-function CustomModal({ isOpen, setIsOpen, title, children }: { isOpen: boolean, setIsOpen: any, title: string, children: any }) {
+function CustomModal(
+  {isOpen, setIsOpen, title, children, onSubmit, onSubmitLabel, closeLabel }:
+    { isOpen: boolean, setIsOpen: any, title: string, children: any, onSubmit: any, onSubmitLabel?: string, closeLabel?: string }
+) {
   const modalOverlayRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -245,22 +266,24 @@ function CustomModal({ isOpen, setIsOpen, title, children }: { isOpen: boolean, 
       id="modal_overlay"
       ref={modalOverlayRef}
       style={{zIndex: 100}}
-      className={`hidden absolute inset-0 bg-black bg-opacity-30 h-screen overflow-hidden w-full flex justify-center items-start md:items-center pt-10 md:pt-0`}
+      className="hidden absolute inset-0 bg-black bg-opacity-30 h-screen overflow-hidden w-full flex justify-center items-start md:items-center pt-10 md:pt-0"
     >
-      {/* modal */}
       <div
         id="modal"
         ref={modalRef}
-        className="z-100 opacity-0 relative w-10/12 md:w-1/2 h-1/2 md:h-3/4 bg-white rounded shadow-lg transition-all duration-300"
+        className="opacity-0 relative bg-white rounded shadow-lg transition-all duration-300
+        w-10/12 md:w-1/2 h-fit xh-1/2 xmd:h-3/4 gap-4"
       >
-        <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+        <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h3>
-          <button type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-hide="authentication-modal">
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            data-modal-hide="authentication-modal"
+          >
             <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 14 14">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -271,43 +294,25 @@ function CustomModal({ isOpen, setIsOpen, title, children }: { isOpen: boolean, 
         </div>
         <div className="p-4 md:p-5">
           {children}
-          {/*<form className="space-y-4" action="#">*/}
-          {/*  <div>*/}
-          {/*    <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your*/}
-          {/*      email</label>*/}
-          {/*    <input type="email" name="email" id="email"*/}
-          {/*           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"*/}
-          {/*           placeholder="name@company.com" required/>*/}
-          {/*  </div>*/}
-          {/*  <div>*/}
-          {/*    <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your*/}
-          {/*      password</label>*/}
-          {/*    <input type="password" name="password" id="password" placeholder="••••••••"*/}
-          {/*           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"*/}
-          {/*           required/>*/}
-          {/*  </div>*/}
-          {/*  <div className="flex justify-between">*/}
-          {/*    <div className="flex items-start">*/}
-          {/*      <div className="flex items-center h-5">*/}
-          {/*        <input id="remember" type="checkbox" value=""*/}
-          {/*               className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"*/}
-          {/*               required/>*/}
-          {/*      </div>*/}
-          {/*      <label htmlFor="remember" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember*/}
-          {/*        me</label>*/}
-          {/*    </div>*/}
-          {/*    <a href="#" className="text-sm text-blue-700 hover:underline dark:text-blue-500">Lost Password?</a>*/}
-          {/*  </div>*/}
-          {/*  <button type="submit"*/}
-          {/*          className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login*/}
-          {/*    to your account*/}
-          {/*  </button>*/}
-          {/*  <div className="text-sm font-medium text-gray-500 dark:text-gray-300">*/}
-          {/*    Not registered? <a href="#" className="text-blue-700 hover:underline dark:text-blue-500">Create*/}
-          {/*    account</a>*/}
-          {/*  </div>*/}
-          {/*</form>*/}
         </div>
+        {/*<div id="button-group" className="border-t w-full mt-6p-4 md:p-5 flex flex-row gap-4 justify-center [&>button]:transition-colors">*/}
+        {/*  <button*/}
+        {/*    type="button"*/}
+        {/*    onClick={() => setIsOpen(false)}*/}
+        {/*    className="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center"*/}
+        {/*  >*/}
+        {/*    Cancel*/}
+        {/*  </button>*/}
+        {/*  {onSubmit &&*/}
+        {/*    <button*/}
+        {/*      type="button"*/}
+        {/*      onClick={() => onSubmit()}*/}
+        {/*      className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"*/}
+        {/*    >*/}
+        {/*      Submit*/}
+        {/*    </button>*/}
+        {/*  }*/}
+        {/*</div>*/}
       </div>
     </div>
   );
@@ -323,11 +328,54 @@ type WalletState = {
   ready: boolean;
 }
 
+
+async function getTxs(address: string) {
+  if(!address) {
+    console.log("NO ADDRESS");
+  }
+  const options = {
+  'method': 'POST',
+  'headers': {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    query: `query {
+    transactions(
+      tags:[{name: "App-Name", values: ["ArTree"]}]
+      owners: ["${address}"]
+     ) {
+        edges {
+          node {
+              id
+              tags { name value }
+              block { timestamp height }
+            }
+          }
+        }
+      }`,
+      variables: {}
+    })
+  };
+  const req = await fetch("https://arweave.net/graphql", options).then(r => r.json()).catch(err => console.log(err))
+  if(!req) return [];
+  try {
+    return req.data.transactions.edges.map((edge: any) => {
+      const id = edge.node.id;
+      const tags = edge.node.tags;
+      const timestamp = edge.node.block.timestamp;
+      const title = tags.find((tag: {name: string, value: string}) => tag.name === "Title")?.value;
+      const source = tags.find((tag: {name: string, value: string}) => tag.name === "Source")?.value;
+      return {title, source}
+    })
+  } catch {
+    return []
+  }
+}
+
 export default function Page() {
   const router = useRouter()
   const slug = (router.query.slug && router.query.slug.length > 0) ? router.query.slug[0] : null;
   const arweaveWalletRef = useRef<null | ArweaveWallet>(null);
-  const windowCheck = () => (typeof window !== 'undefined' && typeof window.arweaveWallet !== 'undefined');
   let _window = (typeof window !== 'undefined' && typeof window.arweaveWallet !== 'undefined');
   const [modalOpen, setModalOpen] = useState(false);
   const walletState = useHookstate<WalletState>({
@@ -344,6 +392,7 @@ export default function Page() {
     name: "",
     avatar: "",
   })
+  const linksState = useHookstate<{title: string, source: string}[]>(async() => [])
 
   useEffect(() => {
     (async () => {
@@ -351,6 +400,7 @@ export default function Page() {
         console.log("SLUG RUN")
         if (slug.length === 43 && pageState.address.value !== slug) {
           pageState.address.set(slug);
+          linksState.set(getTxs(slug))
         } else {
           const accountInfo = (await account.search(slug))?.slice(0, 1)[0];
           if (accountInfo) {
@@ -362,8 +412,9 @@ export default function Page() {
               avatar: avatar,
               name: name,
             })
+            linksState.set(getTxs(addr))
           }
-          console.log(JSON.stringify(accountInfo))
+          // console.log(JSON.stringify(accountInfo))
         }
       }
       if (_window && typeof window.arweaveWallet !== 'undefined' && !walletState.ready.value) {
@@ -412,22 +463,12 @@ export default function Page() {
     return <div>Loading...</div>;
   }
   return (
-    <main
-      className={`relative flex min-h-screen flex-col items-center ${inter.className}`}
-    >
-      {/*<ModalWrapper isOpen={modalOpen} setIsOpen={setModalOpen}>*/}
-      {/*  This is a test test test*/}
-      {/*</ModalWrapper>*/}
-      <CustomModal isOpen={modalOpen} setIsOpen={setModalOpen} title="Add new link">
-        <NewLinkForm wallet={arweaveWalletRef.current}/>
-      </CustomModal>
-      <button onClick={() => setModalOpen(!modalOpen)} className="p-4 bg-sky-600 text-white">Open Modal</button>
-
+    <main className="relative flex min-h-screen flex-col items-center">
       <NavBar wallet={arweaveWalletRef.current} state={walletState} refresh={refresh}/>
-      {/*<Suspense fallback={<div>Loading...</div>}>*/}
+
       <div id="debug" className="hidden">
-        <div className="flex flex-col w-full mb-4">
-          <h3 className="text-2xl">Wallet State</h3>
+    <div className="flex flex-col w-full mb-4">
+      <h3 className="text-2xl">Wallet State</h3>
           <ul>
             <li><b>Ready</b> {`${walletState.ready.value}`}</li>
             <li><b>Connected</b> {`${walletState.connected.value}`}</li>
@@ -446,10 +487,48 @@ export default function Page() {
           </ul>
         </div>
       </div>
-
       {(pageState.name.value || pageState.address.value) &&
-        <Avatar size={100} avatarUrl={pageState.avatar.value} name={pageState.name.value || pageState.address.value}/>
+        <div className="flex flex-col items-center mb-8">
+          <Avatar size={96} avatarUrl={pageState.avatar.value} />
+          <h3 className="font-bold text-xl mt-4">{pageState.name.value || pageState.address.value}</h3>
+        </div>
       }
+      {(pageState.address && walletState.address && pageState.address.value === walletState.address.value) &&
+        <>
+          <NewLinkForm wallet={arweaveWalletRef.current} isOpen={modalOpen} setIsOpen={setModalOpen}/>
+          <button
+            type="button"
+            onClick={() => setModalOpen(!modalOpen)}
+            className="rounded-lg bg-[#4285F4] hover:bg-[#4285F4]/90
+              focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50
+              text-white
+              px-2 py-1.5 sm:px-5 sm:py-2.5 inline-flex items-center"
+          >
+            <span className="flex flex-row items-center gap-2 h-4">
+              <svg className="w-4 h-4 fill-current" focusable="false" aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+              </svg>
+              <span className="font-medium text-sm leading-none">
+                Add link
+              </span>
+            </span>
+          </button>
+        </>
+      }
+
+      <div className="mt-8">
+        {(!linksState.promised && linksState.value.length > 0) &&
+          linksState.value.map(item => (
+            <div
+              className="px-11 py-4 transition-[box-shadow_0.25s_cubic-bezier(0.08,_0.59,_0.29,_0.99)_0s,_border-color_0.25s_cubic-bezier(0.08,_0.59,_0.29,_0.99)_0s,_transform_0.25s_cubic-bezier(0.08,_0.59,_0.29,_0.99)_0s,_background-color_0.25s_cubic-bezier(0.08,_0.59,_0.29,_0.99)_0s]
+              bg-white/80 rounded mb-4"
+            >
+              <a href={item.source}>{item.title}</a>
+            </div>
+          ))
+        }
+      </div>
+
       {/*<section className="w-full max-w-3xl mx-auto bg-white/50 backdrop-blur rounded-lg shadow-lg">*/}
       {/*  <div*/}
       {/*    // className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]"*/}
