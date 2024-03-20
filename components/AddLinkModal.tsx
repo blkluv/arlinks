@@ -1,20 +1,16 @@
-import {ArweaveWallet, LinksResponse, Tag} from "@/types";
-import {State} from "@hookstate/core";
-import {useState} from "react";
+import {State, useHookstate} from "@hookstate/core";
 import {createTransaction, dispatchTransaction} from "@/utils/createTransaction";
 import Modal from "@/components/Modal";
+import {ArweaveWallet, LinksResponse, Tag} from "@/types";
 import type Arweave from "arweave";
 
 
-const defaultNewLinkStatusState = {
-  submitted: false,
-  transaction_id: "",
-  sourceId: "",
-  sourceTitle: ""
-}
-const defaultNewLinkSourceIdState = {
+const defaultState = {
+  title: "",
+  source: "",
   validSource: "",
-  type: "" as "url"|"tx"|""
+  sourceType: "" as "tx"|"url"|"",
+  status: { submitted: false, transaction_id: ""}
 }
 
 export interface AddLinkModalProps {
@@ -26,89 +22,97 @@ export interface AddLinkModalProps {
 }
 
 export function AddLinkModal({wallet, isOpen, setIsOpen, linksState, arweave}: AddLinkModalProps) {
-  const [sourceId, setSourceId] = useState("");
-  const [sourceTitle, setSourceTitle] = useState("");
-  const [source, setSource] = useState(defaultNewLinkSourceIdState);
-  const [status, setStatus] = useState(defaultNewLinkStatusState);
+  const state = useHookstate(defaultState)
 
   if(!wallet) return null;
 
   const handleCreateNewTransaction = async() => {
     const tags: Tag[] = [{name: "App-Name", value: "ArLinks"},
-                         {name: "Source",   value: source.validSource},
-                         {name: "Title",    value: sourceTitle},]
+                         {name: "Title",    value: state.title.value},
+                         {name: "Source",   value: state.validSource.value},]
     const transaction = await createTransaction({ arweave, tags })
     const response = await dispatchTransaction({ transaction, wallet })
     if(response && response.id){
       if(!linksState.promised) {
-        linksState.set(p => [{title: sourceTitle, source: source.validSource, timestamp: new Date().getTime()}, ...p]);
+        linksState.set(p => [
+          {title: state.title.value, source: state.validSource.value, timestamp: new Date().getTime()},
+          ...p
+        ]);
       }
-      setStatus({submitted: true, transaction_id: response.id, sourceId: source.validSource, sourceTitle: sourceTitle})
-      setSourceId("")
-      setSourceTitle("")
-      setSource(defaultNewLinkSourceIdState)
+      state.status.merge({submitted: true, transaction_id: response.id})
     }
   }
 
-  const reset = () => {
-    setSourceId("");
-    setSourceTitle("");
-    setStatus(defaultNewLinkStatusState);
-    setSource(defaultNewLinkSourceIdState)
+  const reset = () => state.set(defaultState);
+
+  const handleClose = (b: boolean) => {
+    if(!b) {
+      reset();
+      setIsOpen(b)
+    } else {
+      setIsOpen(b)
+    }
   }
 
   const handleIdChange = (event: any) => {
-    const val = event.target.value;
+    let val = event.target.value;
     if(typeof val === 'undefined') return;
-    setSourceId(event.target.value);
     const b64Pattern = /^[A-Za-z0-9\-_]*={0,2}$/;
     const isTx = val.length === 43 && b64Pattern.test(val);
     const urlPattern = /^(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?$/;
     const isUrl = !isTx && urlPattern.test(val)
     if(isTx) {
-      setSource({ validSource: val, type: "tx" })
+      state.merge({ source: event.target.value, sourceType: "tx", validSource: val })
     }
     else if(isUrl) {
-      let validSource = val;
       if(!val.startsWith("http") && !val.startsWith("www")) {
-        validSource = `https://${val}`
+        val = `https://${val}`
       }
-      setSource({ validSource: validSource, type: "url" })
+      state.merge({ source: event.target.value, sourceType: "url", validSource: val })
     }
     else {
-      setSource({validSource: "invalid", type: ""})
+      state.merge({ source: event.target.value, sourceType: "", validSource: "invalid" })
     }
   }
 
   return (
     <Modal
       isOpen={isOpen}
-      setIsOpen={setIsOpen}
+      setIsOpen={(b: boolean) => handleClose(b)}
       title="Add new link"
       footer={
         <>
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
+            onClick={() => handleClose(false)}
             className="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
           >
-            {status.submitted ? "Close" : "Cancel"}
+            {state.status.submitted.value ? "Close" : "Cancel"}
           </button>
-          <button
-            type="button"
-            disabled={!status.submitted && (!source.type || !sourceTitle)}
-            onClick={status.submitted ? () => reset() : () => handleCreateNewTransaction()}
-            className="text-white disabled:bg-blue-800/75 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-          >
-            {status.submitted ? "Reset" : "Submit"}
-          </button>
+          {state.status.submitted.value
+            ? <button
+                type="button"
+                onClick={() => reset()}
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              >
+                Reset
+              </button>
+            : <button
+                type="button"
+                disabled={!state.sourceType.value || !state.title.value}
+                onClick={() => handleCreateNewTransaction()}
+                className="text-white disabled:bg-blue-800/75 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              >
+                Submit
+              </button>
+          }
         </>
       }
     >
       <div className="w-full relative flex flex-row items-center">
         <div className="w-full">
           <div className="flex flex-col gap-2">
-            {!status.submitted &&
+            {!state.status.submitted.value &&
               <>
                 <div id="source-title-input" className="flex flex-col">
                   <label htmlFor="source-title" className="mt-1.5 mb-1/2 text-sm">
@@ -119,8 +123,8 @@ export function AddLinkModal({wallet, isOpen, setIsOpen, linksState, arweave}: A
                     autoComplete="off"
                     spellCheck={true}
                     className="bg-slate-100 outline outline-2 outline-slate-400 focus:outline-4 rounded-md font-light tracking-tighter text-[16px] pl-2 px-2 py-1 mt-1"
-                    onChange={(event) => setSourceTitle(event.target.value)}
-                    value={sourceTitle}
+                    onChange={(event) => state.title.set(event.target.value)}
+                    value={state.title.value}
                   />
                 </div>
 
@@ -135,38 +139,36 @@ export function AddLinkModal({wallet, isOpen, setIsOpen, linksState, arweave}: A
                       spellCheck={false}
                       type="text"
                       // minLength={0}
-                      // maxLength={43}
-                      value={sourceId}
+                      maxLength={43}
+                      value={state.source.value}
                       onChange={handleIdChange}
                       className="w-full flex-grow bg-slate-100 outline outline-2 outline-slate-400 focus:outline-4 rounded-md font-light tracking-tighter text-[16px] pl-2 px-2 py-1 mt-1"
                     />
                   </div>
                   <div id="input-validation-display" className="pt-1">
-                    {source.validSource === "invalid" && <span className="block text-gray-600 font-medium text-sm">invalid</span>}
-                    {source.type === "tx" && <span className="block text-green-600 font-medium text-sm">valid arweave tx</span>}
-                    {source.type === "url" && <span className="flex flex-row gap-2 text-green-600 font-medium text-sm">
-                      valid url {source.validSource !== "invalid" && <span className="text-gray-600 font-normal">{source.validSource}</span>}
+                    {state.validSource.value === "invalid" && <span className="block text-gray-600 font-medium text-sm">invalid</span>}
+                    {state.sourceType.value === "tx" && <span className="block text-green-600 font-medium text-sm">valid arweave tx</span>}
+                    {state.sourceType.value === "url" && <span className="flex flex-row gap-2 text-green-600 font-medium text-sm">
+                      valid url {state.validSource.value !== "invalid" && <span className="text-gray-600 font-normal">{state.validSource.value}</span>}
                     </span>}
 
                   </div>
                 </div>
               </>
             }
-            <div id="save-status" className="">
-              {status.submitted &&
-                <div className="flex flex-col">
-                  <p>Successfully saved new link on Arweave<br/><small><a
-                    href={`https://viewblock.io/arweave/tx/${status.transaction_id}}`}>{status.transaction_id}</a></small>
-                  </p>
-                  <br/>
-                  <p>What you saved:</p>
-                  <ul className="pl-3">
-                    <li><b>Title:</b> {status.sourceTitle}</li>
-                    <li><b>{source.type === "url" ? "URL" : "TX"}:</b> {source.validSource}</li>
-                  </ul>
-                </div>
-              }
-            </div>
+            {state.status.submitted.value &&
+              <div id="save-status" className="flex flex-col">
+                <p>Successfully saved new link on Arweave<br/><small><a
+                  href={`https://viewblock.io/arweave/tx/${state.status.transaction_id.value}}`}>{state.status.transaction_id.value}</a></small>
+                </p>
+                <br/>
+                <p>What you saved:</p>
+                <ul className="pl-3">
+                  <li><b>Title:</b> {state.title.value}</li>
+                  <li><b>{state.sourceType.value === "url" ? "URL" : "TX"}:</b> {state.validSource.value}</li>
+                </ul>
+              </div>
+            }
           </div>
         </div>
       </div>

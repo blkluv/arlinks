@@ -1,14 +1,12 @@
+import { useEffect, useRef } from "react";
 import { useRouter } from 'next/router'
 import { useHookstate } from "@hookstate/core";
 import { PermissionType } from "arconnect";
 import Arweave from 'arweave';
-import { Fragment, useEffect, useRef } from "react";
-import {ArweaveWallet, LinksResponse, ModalState, WalletState} from "@/types";
-import Account from 'arweave-account';
-import type {ArAccount} from 'arweave-account';
+import Account, { type ArAccount } from 'arweave-account';
 import { getTxs } from "@/utils/populateLinks";
-import { Avatar, NavBar, AddLinkModal, RemoveLinkModal } from "@/components";
-import CreateYourOwnModal from "@/components/CreateYourOwnModal";
+import { Avatar, NavBar, AddLinkModal, RemoveLinkModal, CreateYourOwnModal } from "@/components";
+import {ArweaveWallet, LinksResponse, ModalState, WalletState} from "@/types";
 
 
 const arweave = Arweave.init({
@@ -40,33 +38,10 @@ export default function Page() {
   const modalState = useHookstate(defaultModalState)
   const walletState = useHookstate<WalletState>(defaultWalletState)
   const pageState = useHookstate(defaultPageState)
-  // const linksState = useHookstate<LinksResponse>(async() => [])
   const linksState = useHookstate<LinksResponse>([])
 
   useEffect(() => {
-    // async function urlSlugToState() {
-    //   if (slug && !pageState.address.value) {
-    //     const b64Pattern = /^[A-Za-z0-9\-_]*={0,2}$/;
-    //     const slugIsNewTxId: boolean = typeof slug !== 'undefined' && slug.length === 43 && b64Pattern.test(slug);
-    //     if (slugIsNewTxId) {
-    //       pageState.address.set(slug);
-    //       linksState.set(getTxs(slug))
-    //     } else {
-    //       const accountInfo: ArAccount = (await account.search(slug))?.slice(0, 1)[0];
-    //       if (accountInfo) {
-    //         const addr = accountInfo.addr;
-    //         pageState.merge({ address: addr, avatar: accountInfo?.profile?.avatarURL, name: accountInfo?.profile?.handleName })
-    //         linksState.set(getTxs(addr))
-    //       }
-    //     }
-    //   }
-    //   if (_window && typeof window.arweaveWallet !== 'undefined' && !walletState.ready.value) {
-    //     await refresh(window.arweaveWallet);
-    //     arweaveWalletRef.current = window.arweaveWallet;
-    //   }
-    // }
-    // urlSlugToState()
-    (async() => {
+    async function urlSlugToState() {
       if (slug && !pageState.address.value) {
         const b64Pattern = /^[A-Za-z0-9\-_]*={0,2}$/;
         const slugIsNewTxId: boolean = typeof slug !== 'undefined' && slug.length === 43 && b64Pattern.test(slug);
@@ -74,7 +49,6 @@ export default function Page() {
           pageState.address.set(slug);
           const links = await getTxs(slug);
           linksState.set(links)
-          // linksState.set(getTxs(slug))
         } else {
           const accountInfo: ArAccount = (await account.search(slug))?.slice(0, 1)[0];
           if (accountInfo) {
@@ -88,7 +62,9 @@ export default function Page() {
         await refresh(window.arweaveWallet);
         arweaveWalletRef.current = window.arweaveWallet;
       }
-    })()
+    }
+    urlSlugToState()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, _window])
 
@@ -115,7 +91,6 @@ export default function Page() {
     }
   }
 
-  // if (!arweaveWalletRef.current) return <div>Loading...</div>;
   if (!pageState.address.value) {
     return (
       <main className="relative flex min-h-screen flex-col justify-center items-center p-4 bg-gray-100 bggrad">
@@ -127,7 +102,6 @@ export default function Page() {
     <main className="relative flex min-h-screen flex-col items-center p-4 bg-gray-100 bggrad">
       <AddLinkModal
         wallet={arweaveWalletRef.current}
-        // isOpen={JSON.parse(JSON.stringify(modalState.newLink.open.value))}
         isOpen={modalState.newLink.open.value}
         setIsOpen={(b: boolean) => modalState.newLink.open.set(b)}
         linksState={linksState}
@@ -247,85 +221,17 @@ export default function Page() {
         </div>
       </section>
       {(pageState.address.value !== walletState.address.value || !walletState.connected.value) &&
-        <>
-          {/*<Modal*/}
-          {/*  isOpen={modalState.cyo.open.value}*/}
-          {/*  setIsOpen={(b: boolean) => modalState.cyo.open.set(b)}*/}
-          {/*  title="Create Your Own Page"*/}
-          {/*  footer={*/}
-          {/*      <button*/}
-          {/*        type="button"*/}
-          {/*        onClick={() => modalState.cyo.open.set(false)}*/}
-          {/*        className="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center"*/}
-          {/*      >*/}
-          {/*        Close*/}
-          {/*      </button>*/}
-          {/*  }*/}
-          {/*>*/}
-          {/*  <div className="w-full h-full flex flex-col">*/}
-          {/*    <div id="cyo-modal-body" className="flex-shrink overflow-auto">*/}
-          {/*      <div className="flex flex-col gap-2 h-full">*/}
-          {/*        <h3 className="text-lg font-medium text-blue-600 mb-1">*/}
-          {/*          To create your own links page, simply follow these steps:*/}
-          {/*        </h3>*/}
-          {/*        <div className="flex-shrink overflow-auto">*/}
-          {/*          <ol className="list-decimal marker:text-blue-600 marker:font-black space-y-4 pl-5 [&_li]:pl-2">*/}
-          {/*            <li>*/}
-          {/*              <div className="">*/}
-          {/*                Click the <strong>connect</strong> button on the top right of the page to login.<br/>*/}
-          {/*                <small>If you do not have an Arweave wallet, you can easily create one with &nbsp;*/}
-          {/*                  <a href="https://arconnect.io/" target="_blank"><u>ArConnect</u></a></small>*/}
-          {/*              </div>*/}
-          {/*            </li>*/}
-          {/*            <li>*/}
-          {/*              <div className="">*/}
-          {/*                Click the <strong>menu</strong> button on the top right of the page and select &quot;My*/}
-          {/*                Links&quot;.<br/>*/}
-          {/*              </div>*/}
-          {/*            </li>*/}
-          {/*            <li>*/}
-          {/*              <div className="">*/}
-          {/*                Click the <strong>Add Link</strong> button under your name.<br/>*/}
-          {/*              </div>*/}
-          {/*            </li>*/}
-          {/*            <li>*/}
-          {/*              <div className="">*/}
-          {/*                Enter a Title such as &quot;Instagram&quot; or &quot;My Blog&quot;, &nbsp;*/}
-          {/*                enter an Arweave transaction id or full URL (starting with http), &nbsp;*/}
-          {/*                and click <strong>Submit</strong>.*/}
-          {/*              </div>*/}
-          {/*            </li>*/}
-          {/*            <li>*/}
-          {/*              <div className="">*/}
-          {/*                <small><i>(Optional)</i></small>&nbsp;*/}
-          {/*                <a href="https://account.arweave.dev/" target="_blank"><u>Edit your public Arweave*/}
-          {/*                  Profile</u></a><br/>*/}
-          {/*                <ul className="list-disc text-sm pl-4 space-y-2 [&_li]:pl-2">*/}
-          {/*                  <li>Add or change your username, to access your page*/}
-          {/*                    at &quot;{window.location.host}/yourUserName&quot;</li>*/}
-          {/*                  <li>Add or change your profile picture</li>*/}
-          {/*                  <li>Write or change your bio</li>*/}
-          {/*                </ul>*/}
-          {/*              </div>*/}
-          {/*            </li>*/}
-          {/*          </ol>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</Modal>*/}
-          <section className="my-10">
-            <div className="flex flex-col items-center">
-              <button
-                type="button"
-                className="animate-bounce bg-gradient-to-r from-white/95 to-white/90 text-black font-bold rounded-full leading-none py-2 px-4"
-                onClick={() => modalState.cyo.open.set(true)}
-              >
-                <small>Create your own ArLinks</small>
-              </button>
-            </div>
-          </section>
-        </>
+        <section className="my-10">
+          <div className="flex flex-col items-center">
+            <button
+              type="button"
+              className="animate-bounce bg-gradient-to-r from-white/95 to-white/90 text-black font-bold rounded-full leading-none py-2 px-4"
+              onClick={() => modalState.cyo.open.set(true)}
+            >
+              <small>Create your own ArLinks</small>
+            </button>
+          </div>
+        </section>
       }
 
       <hr className="flex flex-1 h-auto"></hr>
@@ -334,7 +240,7 @@ export default function Page() {
         className="w-screen -mb-4 md:-mb-5 px-4 pb-4 pt-16 flex flex-row justify-between items-center bg-gradient-to-t from-stone-200 via-stone-200/75 to-stone-200/0">
         <img src="/permanent-on-arweave_white.png" width={128} height={57} alt="permanent-on-arweave"/>
         <div className="flex flex-col items-end gap-1">
-          <a href="https://github.com/scottroot/arlinks" alt="Link to ArLinks GitHub repo" target="_blank">
+          <a href="https://github.com/scottroot/arlinks" target="_blank">
             <button
               type="button"
               className="text-white font-medium text-sm text-center rounded-lg px-3 py-1.5 flex w-fit items-center bg-[#24292F] hover:bg-[#24292F]/90 transition-colors focus:ring-4 focus:outline-none focus:ring-[#24292F]/50"
