@@ -18,16 +18,65 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  overflow-x: hidden;
+  /*background: linear-gradient(*/
+  /*    to bottom,*/
+  /*    transparent,*/
+  /*    rgb(var(--background-end-rgb))*/
+  /*  )*/
+  /*  rgb(var(--background-start-rgb));*/
+    background: white;
 }
 
+/*noinspection CssInvalidPropertyValue*/
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.peachtree {
+    background-color: rgb(101, 163, 13);
+    background-image: radial-gradient(at 34% 4%, rgb(255, 255, 255) 0, transparent 97%), radial-gradient(at 15% 17%, rgb(214, 211, 209) 0, transparent 85%), radial-gradient(at 68% 99%, rgb(254, 215, 170) 0, transparent 84%), radial-gradient(at 30% 37%, rgb(162, 28, 175) 0, transparent 77%), radial-gradient(at 3% 72%, rgb(219, 39, 119) 0, transparent 63%), radial-gradient(at 99% 49%, rgb(67, 56, 202) 0, transparent 5%);
+}
+.bluish {
+
+    background-color: rgb(254, 205, 211);
+    background-image: radial-gradient(at 98% 22%, rgb(147, 197, 253) 0, transparent 50%), radial-gradient(at 86% 50%, rgb(252, 165, 165) 0, transparent 92%), radial-gradient(at 41% 40%, rgb(229, 229, 229) 0, transparent 71%), radial-gradient(at 1% 51%, rgb(224, 231, 255) 0, transparent 36%), radial-gradient(at 69% 43%, rgb(217, 249, 157) 0, transparent 84%), radial-gradient(at 90% 54%, rgb(224, 231, 255) 0, transparent 63%);
+
+}
+.redsky {
+    @apply bg-red-300/50;
+    /*background-color: rgb(186, 97, 97);*/
+    background-image: radial-gradient(at 51% 63%, rgb(252, 165, 165) 0, transparent 68%), radial-gradient(at 28% 68%, rgb(187, 247, 208) 0, transparent 80%), radial-gradient(at 69% 69%, rgb(214, 211, 209) 0, transparent 25%), radial-gradient(at 88% 15%, rgb(186, 230, 253) 0, transparent 61%), radial-gradient(at 68% 18%, rgb(165, 180, 252) 0, transparent 41%);
+}
+.rose {
+    background-color: rgb(220, 252, 231);
+    background-image: radial-gradient(at 19% 27%, rgb(233, 213, 255) 0, transparent 95%), radial-gradient(at 78% 58%, rgb(245, 245, 245) 0, transparent 60%), radial-gradient(at 39% 100%, rgb(161, 98, 7) 0, transparent 48%), radial-gradient(at 3% 37%, rgb(127, 29, 29) 0, transparent 63%), radial-gradient(at 52% 35%, rgb(68, 64, 60) 0, transparent 11%), radial-gradient(at 61% 87%, rgb(248, 113, 113) 0, transparent 49%);
+}
+
+.pond {
+    background-color: rgb(148, 163, 184);
+    background-image: radial-gradient(at 76% 10%, rgba(14, 116, 144, 0.3) 0, transparent 80%), radial-gradient(at 11% 12%, rgb(255, 255, 255) 0, transparent 89%), radial-gradient(at 3% 99%, rgba(6, 95, 70, 0.57) 0, transparent 54%), radial-gradient(at 19% 100%, rgba(71, 85, 105, 0.52) 0, transparent 15%), radial-gradient(at 36% 95%, rgb(16, 185, 129) 0, transparent 14%), radial-gradient(at 14% 59%, rgb(17, 24, 39) 0, transparent 58%);
+}
+.lime {
+    background-color: rgb(244, 244, 245);
+    background-image: radial-gradient(at 60% 29%, rgb(216, 180, 254) 0, transparent 11%), radial-gradient(at 47% 4%, rgb(251, 207, 232) 0, transparent 82%), radial-gradient(at 59% 30%, rgb(63, 98, 18) 0, transparent 30%), radial-gradient(at 61% 35%, rgb(103, 232, 249) 0, transparent 52%), radial-gradient(at 65% 53%, rgb(229, 229, 229) 0, transparent 90%);
+}
+.bggrad {
+
+    /*background-color: rgb(245, 245, 245);*/
+    /*background-color: rgb(7, 37, 155);*/
+    /*background-image: radial-gradient(at 28.94% 27.73%, rgb(255, 237, 213) 0, transparent 52%), radial-gradient(at 81.49% 24.73%, rgb(187, 247, 208) 0, transparent 47%), radial-gradient(at 49.41% 46.06%, rgb(224, 242, 254) 0, transparent 100%), radial-gradient(at 36.91% 61.23%, rgb(159, 18, 57) 0, transparent 72%), radial-gradient(at 64.12% 62.17%, rgb(59, 130, 246) 0, transparent 100%);*/
+    /*    background: radial-gradient(at 18% 99%, rgb(250, 255, 204) 0px, transparent 50%) repeat scroll 0% 0%,*/
+    /*        radial-gradient(at 97% 8%, rgb(237, 255, 243) 0px, transparent 50%) repeat scroll 0% 0%,*/
+    /*        radial-gradient(at 79% 82%, rgba(233, 109, 131, 0.56) 0px, transparent 50%) repeat scroll 0% 0%,*/
+    /*        radial-gradient(at 96% 10%, rgba(239, 162, 255, 0.75) 0px, transparent 50%) repeat scroll 0% 0%,*/
+    /*        radial-gradient(at 42% 20%, rgb(230, 246, 253) 0px, transparent 50%) repeat scroll 0% 0%,*/
+    /*        radial-gradient(at 4% 49%, rgb(218, 185, 222) 0px, transparent 50%) repeat scroll 0% 0%, rgba(0, 0, 0, 0) radial-gradient(at 57% 33%, rgb(221, 175, 225) 0px, rgba(213, 207, 255, 0.51) 50%) repeat scroll 0% 0%;*/
+
+    background-color: rgb(245, 245, 245);
+    background-image: radial-gradient(at 28.94% 27.73%, rgb(255, 237, 213) 0, transparent 52%), radial-gradient(at 91.99% 33.00%, rgb(187, 247, 208) 0, transparent 47%), radial-gradient(at 49.41% 46.06%, rgb(224, 242, 254) 0, transparent 86%), radial-gradient(at 22.53% 73.83%, rgb(253, 224, 71) 0, transparent 50%), radial-gradient(at 93.54% 92.83%, rgb(253, 164, 175) 0, transparent 100%), radial-gradient(at 50% 0.15%, rgb(204, 251, 241) 0, transparent 100%);
+
+
 }

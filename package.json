@@ -9,11 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.18",
     "@hookstate/core": "^4.0.1",
     "arweave": "^1.14.4",
     "arweave-account": "^1.4.3",
-    "arweave-wallet-kit": "^1.0.4",
     "next": "14.1.3",
     "react": "^18",
     "react-dom": "^18"

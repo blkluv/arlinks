@@ -14,6 +14,7 @@ export type ArweaveWallet = {
    *
    * @param permissions
    * @param appInfo
+   * @param gateway
    */
   connect(
     permissions: PermissionType[],
@@ -148,3 +149,4 @@ export type ArweaveWallet = {
    */
   dispatch(transaction: Transaction): Promise<DispatchResult>;
 };
+
