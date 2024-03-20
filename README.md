@@ -1,17 +1,6 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
-### [Arweave-Wallet-Kit (GitHub)](https://github.com/labscommunity/arweave-wallet-kit/tree/main)  
-[NPM Arweave-Wallet-Kit](https://www.npmjs.com/package/arweave-wallet-kit)  
-### [Hookstate Docs](https://hookstate.js.org/docs/getting-started/)  
-[Hookstate demo src](https://github.com/avkonst/hookstate/tree/master/docs/demos/todolist/src)  
-### [ArLocal Docker.md](https://github.com/textury/arlocal/blob/main/docker.md)  
-docker run --name arlocal -p 1984:1984 textury/arlocal  
-http://localhost:1984/mint/Kd5HLlfM_Azf9WpzZTL3Qso890VgiVz6CQ9S-9k460M/1000000  
-http://localhost:1984/mine  
-
-----
-
 
 First, run the development server:
 

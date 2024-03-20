@@ -7,7 +7,7 @@ import type Arweave from "arweave";
 
 
 export interface RemoveLinkModalProps {
-  wallet: ArweaveWallet,
+  wallet: ArweaveWallet | null,
   isOpen: boolean,
   setIsOpen: any,
   item: {title: string, idx: number},
@@ -17,6 +17,8 @@ export interface RemoveLinkModalProps {
 
 export function RemoveLinkModal({wallet, isOpen, setIsOpen, item, linksState, arweave}: RemoveLinkModalProps) {
   const [dispatchId, setDispatchId] = useState("");
+
+  if(!wallet) return null;
 
   const handleCreateNewTransaction = async() => {
     const tags: Tag[] = [{ name: "App-Name", value: "ArLinks"},
