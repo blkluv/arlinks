@@ -42,12 +42,12 @@ export function Modal({isOpen, setIsOpen, title, children, footer}: ModalProps) 
       id="modal_overlay"
       ref={modalOverlayRef}
       style={{zIndex: 100}}
-      className="hidden fixed top-0 left-0 h-screen inset-0 bg-black bg-opacity-30  overflow-hidden w-full flex justify-center items-center md:items-center 2xl:pt-10 md:pt-0"
+      className="hidden modal fixed top-0 right-0 bottom-0 left-0 min-h-screen inset-0 bg-black bg-opacity-30  overflow-hidden w-full flex justify-center items-center md:items-center 2xl:pt-10 md:pt-0"
     >
       <div
         id="modal"
         ref={modalRef}
-        className="flex flex-col opacity-0 relative bg-white rounded shadow-lg transition-all duration-300
+        className="overscroll-none flex flex-col opacity-0 relative bg-white rounded shadow-lg transition-all duration-300
         w-10/12 md:w-1/2 h-fit xh-1/2 xmd:h-3/4 max-h-[85vh!important]"
       >
         <div id="modal-header" className="flex shrink-0 items-center justify-between p-4 md:p-5 border-b rounded-t">

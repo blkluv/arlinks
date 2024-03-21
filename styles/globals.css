@@ -3,9 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-    body {
-        @apply text-black/90 bg-white;
-    }
     .wrapper {
         @apply p-4 sm:p-5 w-full
     }
@@ -17,9 +14,12 @@
     text-wrap: balance;
   }
 }
-iframe
-{
-    display: none;
+body {
+    color: rgb(0, 0, 0, 90%);
+    background-color: white;
+    width: 100vw;
+    max-width: calc(100vw - (100vw - 100%));
+    scrollbar-gutter: stable;
 }
 
 /*.peachtree {*/
