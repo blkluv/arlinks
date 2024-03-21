@@ -48,7 +48,7 @@ export function Modal({isOpen, setIsOpen, title, children, footer}: ModalProps) 
         id="modal"
         ref={modalRef}
         className="overscroll-none flex flex-col opacity-0 relative bg-white rounded shadow-lg transition-all duration-300
-        w-10/12 md:w-1/2 h-fit xh-1/2 xmd:h-3/4 max-h-[85vh!important]"
+        w-10/12 md:w-1/2 h-fit xh-1/2 xmd:h-3/4 max-h-[75vh!important]"
       >
         <div id="modal-header" className="flex shrink-0 items-center justify-between p-4 md:p-5 border-b rounded-t">
           <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
@@ -60,7 +60,7 @@ export function Modal({isOpen, setIsOpen, title, children, footer}: ModalProps) 
             </svg><span className="sr-only">Close modal</span>
           </button>
         </div>
-        <div id="modal-body" className="flex flex-grow w-full h-auto p-4 md:p-5 overflow-auto">
+        <div id="modal-body" className="flex flex-grow w-full max-w-full h-auto p-4 md:p-5 overflow-y-auto overflow-x-hidden">
           {children}
         </div>
         {footer &&

@@ -26,13 +26,13 @@ export function CreateYourOwnModal({isOpen, setIsOpen}: CreateYourOwnModalProps)
         </button>
       }
     >
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full max-w-full overflow-x-hidden whitespace-break-spaces h-full flex flex-col">
         <div id="cyo-modal-body" className="flex-shrink overflow-auto">
-          <div className="flex flex-col gap-2 h-full">
+          <div className="flex flex-col gap-2 w-full h-full">
             <h3 className="text-lg font-medium text-blue-600 mb-1">
               To create your own links page, simply follow these steps:
             </h3>
-            <div className="flex-shrink overflow-auto">
+            <div className="flex-shrink max-w-full overflow-y-auto overflow-x-hidden">
               <ol className="list-decimal marker:text-blue-600 marker:font-black space-y-4 pl-5 [&_li]:pl-2 text-sm">
                 <li>
                   <div className="">
