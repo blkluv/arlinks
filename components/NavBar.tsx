@@ -96,26 +96,26 @@ export function NavBar({wallet, walletState, refresh}: NavBarProps) {
             <div
               ref={menuRef}
               id="dropdownDots"
-              className="absolute right-0 z-10 hidden flex bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+              className="absolute right-0 z-10 hidden flex bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
             >
-              <ul className="w-full py-2 text-sm text-gray-700 dark:text-gray-200"
+              <ul className="w-full py-2 text-sm text-gray-700"
                   aria-labelledby="dropdownMenuIconButton">
                 <li>
                   <a
                     href={`/${walletState.address.value}`}
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    className="block px-4 py-2 hover:bg-gray-100"
                   >
                     My Links
                   </a>
                 </li>
                 <li>
                   <a href="https://account.arweave.dev/" target="_blank"
-                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Update
+                     className="block px-4 py-2 hover:bg-gray-100">Update
                     Profile</a>
                 </li>
                 <li>
                   <button onClick={() => handleDisconnect()}
-                          className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                          className="w-full text-left block px-4 py-2 hover:bg-gray-100">
                     Disconnect
                   </button>
                 </li>
