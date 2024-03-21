@@ -47,7 +47,7 @@ export function NavBar({wallet, walletState, refresh}: NavBarProps) {
     openModal(isOpen);
   }, [isOpen]);
   return (
-    <nav className="w-full flex flex-row items-center justify-between p-4">
+    <nav className="w-full flex flex-row items-center justify-between sm:p-4">
       <a href="/">
         <h1 className="text-2xl sm:text-4xl tracking-tight font-extrabold text-gray-900">
           ArLinks
@@ -82,13 +82,13 @@ export function NavBar({wallet, walletState, refresh}: NavBarProps) {
             <button
               id="dropdownMenuIconButton"
               onClick={() => setIsOpen(!isOpen)}
-              className="rounded-lg bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 text-white p-2 inline-flex items-center"
+              className="rounded-lg text-gray-900 py-2 inline-flex items-center"
               type="button"
             >
-              <svg className="w-4 h-4 mr-2 fill-current" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
-                <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
+              <svg className="w-5 h-5 mr-2 fill-current" focusable="false" aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"></path>
               </svg>
-              <span className="font-medium text-sm leading-none">
+              <span className="font-medium leading-none">
                 Menu
               </span>
             </button>

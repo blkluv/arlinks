@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import React, {useEffect, useRef} from "react";
 
 
 export interface ModalProps {
@@ -42,7 +42,7 @@ export function Modal({isOpen, setIsOpen, title, children, footer}: ModalProps) 
       id="modal_overlay"
       ref={modalOverlayRef}
       style={{zIndex: 100}}
-      className="hidden absolute inset-0 bg-black bg-opacity-30 h-dvh overflow-hidden w-full flex justify-center items-center md:items-center 2xl:pt-10 md:pt-0"
+      className="hidden fixed top-0 left-0 h-screen inset-0 bg-black bg-opacity-30  overflow-hidden w-full flex justify-center items-center md:items-center 2xl:pt-10 md:pt-0"
     >
       <div
         id="modal"
