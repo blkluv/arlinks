@@ -20,7 +20,7 @@ export function RemoveLinkModal({wallet, isOpen, setIsOpen, item, linksState, ar
   if(!wallet) return null;
 
   const handleCreateNewTransaction = async() => {
-    const tags: Tag[] = [{ name: "App-Name", value: "ArLinks"},
+    const tags: Tag[] = [{ name: "App-Name", value: "ARvrtise"},
                          { name: "Title", value: item.title },
                          { name: "Removed", "value": "true" },]
     const transaction = await createTransaction({ arweave, tags })

@@ -27,7 +27,7 @@ export function AddLinkModal({wallet, isOpen, setIsOpen, linksState, arweave}: A
   if(!wallet) return null;
 
   const handleCreateNewTransaction = async() => {
-    const tags: Tag[] = [{name: "App-Name", value: "ArLinks"},
+    const tags: Tag[] = [{name: "App-Name", value: "ARvrtise"},
                          {name: "Title",    value: state.title.value},
                          {name: "Source",   value: state.validSource.value},]
     const transaction = await createTransaction({ arweave, tags })

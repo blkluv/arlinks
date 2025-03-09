@@ -13,7 +13,7 @@ export async function getTxs(address: string): Promise<LinksResponse> {
   body: JSON.stringify({
     query: `query {
     transactions(
-      tags:[{name: "App-Name", values: ["ArLinks"]}]
+      tags:[{name: "App-Name", values: ["ARvrtise"]}]
       owners: ["${address}"]
       sort: HEIGHT_DESC
      ) {

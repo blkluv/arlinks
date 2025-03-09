@@ -50,7 +50,7 @@ export function NavBar({wallet, walletState, refresh}: NavBarProps) {
     <nav className="w-full flex flex-row items-center justify-between sm:p-4">
       <a href="/">
         <h1 className="text-2xl sm:text-4xl tracking-tight font-extrabold text-gray-900">
-          ArLinks
+          ARvrtise
         </h1>
       </a>
       <div className="flex flex-row">

@@ -11,10 +11,10 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        {/*<title>ArLinks</title>*/}
+        {/*<title>ARvrtise</title>*/}
         {/*<meta*/}
         {/*  name="description"*/}
-        {/*  content="ArLinks provides a new Web3-friendly Link-in-Bio solution that is decentralized, permanent, and stored on-chain."*/}
+        {/*  content="ARvrtise provides a new Web3-friendly Link-in-Bio solution that is decentralized, permanent, and stored on-chain."*/}
         {/*/>*/}
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>

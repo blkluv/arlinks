@@ -172,7 +172,7 @@ export default function Page() {
           <div className="blockquote-wrapper">
             <blockquote>
               <h1>
-                <span className="text-white">ArLinks&nbsp; is 🔥.</span>&nbsp;
+                <span className="text-white">ARvrtise&nbsp; is 🔥.</span>&nbsp;
                 It&apos;s been such a game-changer.&nbsp;
                 I can easily save and share across platforms like X, Lens, Farcaster...&nbsp;
                 Plus, <span className="text-white">the integration with Arweave is top-notch</span>.&nbsp;
@@ -195,7 +195,7 @@ export default function Page() {
               className="animate-bounce bg-gradient-to-r from-white/95 to-white/90 text-black text-xl font-bold rounded-full py-2 px-6"
               onClick={() => modalState.cyo.open.set(true)}
             >
-              <small>Read how to create your ArLinks page</small>
+              <small>Read how to create your ARvrtise page</small>
             </button>
           </div>
         </section>
@@ -351,7 +351,7 @@ export default function Page() {
               className="animate-bounce bg-gradient-to-r from-white/95 to-white/90 text-black font-bold rounded-full leading-none py-2 px-4"
               onClick={() => modalState.cyo.open.set(true)}
             >
-              <small>Create your own ArLinks</small>
+              <small>Create your own ARvrtise link</small>
             </button>
           </div>
         </section>
@@ -379,7 +379,7 @@ export default function Page() {
       {/*      </button>*/}
       {/*    </a>*/}
       {/*    <span className="text-xs">*/}
-      {/*      Deployed with <a href="https://github.com/textury/arkb"><u>arkb</u></a> and stored on <a*/}
+      {/*      Deployed with <a href="https://luvnft.com"><u>LUV NFT</u></a> and stored on <a*/}
       {/*      href="https://arweave.org"><u>Arweave</u></a>*/}
       {/*    </span>*/}
       {/*  </div>*/}
